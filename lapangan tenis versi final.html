@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>SmashCourt - Booking Lapangan</title>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1E40AF;
+            --primary-light: #3B82F6;
+            --secondary: #64748B;
+            --success: #10B981;
+            --success-light: #34D399;
+            --danger: #EF4444;
+            --danger-light: #F87171;
+            --warning: #F59E0B;
+            --warning-light: #FBBF24;
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --surface-alt: #F1F5F9;
+            --text-main: #1E293B;
+            --text-sub: #64748B;
+            --text-light: #94A3B8;
+            --border: #E2E8F0;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --header-height: 80px;
+            --nav-height: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 100%;
+            max-height: 932px;
+            background-color: var(--background);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Desktop responsive */
+        @media (min-width: 768px) {
+            body { padding: 40px; }
+            .app-container { border-radius: 24px; }
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            padding: calc(env(safe-area-inset-top) + 15px) 20px 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .header .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-main);
+            padding: 5px;
+            line-height: 1;
+        }
+
+        .header .menu-btn {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            display: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .card.clickable {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .card.clickable:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            background: var(--surface-alt);
+        }
+
+        .card.highlight {
+            border-left: 4px solid var(--primary);
+        }
+
+        .card.warning {
+            border-left: 4px solid var(--warning);
+        }
+
+        .card.danger {
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--radius);
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            background: var(--primary-dark);
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:active {
+            background: #DC2626;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #1E293B;
+        }
+
+        .btn-warning:active {
+            background: #D97706;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:active {
+            background: #059669;
+        }
+
+        .btn-sm {
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* Forms */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-sub);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            background: var(--surface);
+            color: var(--text-main);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-group input.error,
+        .input-group select.error,
+        .input-group textarea.error {
+            border-color: var(--danger);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-available { background: #D1FAE5; color: #065F46; }
+        .status-full { background: #FEE2E2; color: #991B1B; }
+        .status-active { background: #DBEAFE; color: #1E40AF; }
+        .status-warning { background: #FEF3C7; color: #92400E; }
+        .status-success { background: #D1FAE5; color: #047857; }
+        .status-cancelled { background: #F1F5F9; color: #64748B; }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: var(--surface);
+            padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 11px;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .nav-item:active {
+            background: var(--surface-alt);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 4px;
+            transition: transform 0.2s;
+        }
+
+        /* Typography */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .text-sm { font-size: 14px; }
+        .text-xs { font-size: 12px; }
+        .text-lg { font-size: 18px; }
+        .text-xl { font-size: 22px; }
+        .text-sub { color: var(--text-sub); }
+        .text-light { color: var(--text-light); }
+        .text-primary { color: var(--primary); }
+        .text-success { color: var(--success); }
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .font-medium { font-weight: 500; }
+
+        /* Flex Utilities */
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .flex-center { display: flex; justify-content: center; align-items: center; }
+        .flex-wrap { flex-wrap: wrap; }
+        .items-center { align-items: center; }
+        .gap-2 { gap: 8px; }
+        .gap-4 { gap: 16px; }
+
+        /* Spacing */
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 12px; }
+        .mb-3 { margin-bottom: 16px; }
+        .mb-4 { margin-bottom: 20px; }
+        .mt-2 { margin-top: 12px; }
+        .mt-3 { margin-top: 16px; }
+        .mt-4 { margin-top: 20px; }
+        .mt-6 { margin-top: 32px; }
+
+        /* Date Scroll */
+        .date-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .date-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .date-item {
+            min-width: 65px;
+            text-align: center;
+            padding: 12px 8px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .date-item:active {
+            transform: scale(0.95);
+        }
+
+        .date-item.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .date-item .day {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .date-item .date {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        .date-item .month {
+            font-size: 10px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Time Slots Grid */
+        .court-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 350px) {
+            .court-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .time-slot {
+            padding: 12px 8px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--surface);
+        }
+
+        .time-slot:active {
+            transform: scale(0.95);
+        }
+
+        .time-slot.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .time-slot.disabled {
+            background: var(--surface-alt);
+            color: var(--text-light);
+            border-color: var(--border);
+            cursor: not-allowed;
+        }
+
+        .time-slot .time {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .time-slot .status {
+            font-size: 10px;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 52px;
+            height: 30px;
+            background: var(--border);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch.active {
+            background: var(--success);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(22px);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: calc(80px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1E293B;
+            color: white;
+            padding: 14px 24px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            width: 90%;
+            max-width: 340px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--danger); }
+        .toast.warning { background: var(--warning); color: #1E293B; }
+
+        /* Modal */
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
+            animation: slideUp 0.3s ease;
+            box-shadow: var(--shadow-lg);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal h3 {
+            margin-bottom: 12px;
+            color: var(--text-main);
+            font-size: 18px;
+        }
+
+        .modal p {
+            color: var(--text-sub);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .modal-policy {
+            background: #FEF3C7;
+            border-left: 4px solid var(--warning);
+            padding: 12px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #92400E;
+            border-radius: 6px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons .btn {
+            margin-top: 0;
+            flex: 1;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: #DBEAFE;
+            border: 1px solid #2563EB;
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #1E40AF;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .info-box .icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .policy-box {
+            background: #FEF3C7;
+            border-left: 4px solid var(--warning);
+            padding: 14px 16px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #92400E;
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+
+        .policy-box strong {
+            color: #78350F;
+        }
+
+        /* FAQ */
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+        }
+
+        .faq-item:first-child {
+            padding-top: 0;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            transition: color 0.2s;
+        }
+
+        .faq-question:active {
+            color: var(--primary);
+        }
+
+        .faq-answer {
+            margin-top: 12px;
+            color: var(--text-sub);
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+            padding: 12px;
+            background: var(--surface-alt);
+            border-radius: var(--radius);
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .faq-item.active .faq-question {
+            color: var(--primary);
+        }
+
+        .faq-item.active .faq-question span {
+            transform: rotate(180deg);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* Menu Items */
+        .menu-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:first-child {
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+            border-bottom-left-radius: var(--radius);
+            border-bottom-right-radius: var(--radius);
+        }
+
+        .menu-item:active {
+            background: var(--surface-alt);
+        }
+
+        .menu-item.danger {
+            color: var(--danger);
+        }
+
+        .menu-item .arrow {
+            color: var(--text-light);
+            font-size: 18px;
+        }
+
+        /* Profile Avatar */
+        .profile-avatar {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            font-weight: 700;
+            box-shadow: var(--shadow);
+        }
+
+        /* Hidden */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+        }
+
+        .empty-state .icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar Styling */
+        .content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .content::-webkit-scrollbar-track {
+            background: var(--surface-alt);
+        }
+
+        .content::-webkit-scrollbar-thumb {
+            background: var(--text-light);
+            border-radius: 3px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body { background: white; padding: 0; }
+            .app-container { box-shadow: none; max-width: none; }
+            .bottom-nav, .header { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header" id="app-header">
+            <button class="back-btn hidden" id="back-btn" onclick="goBack()">←</button>
+            <h1 id="header-title">SmashCourt</h1>
+            <button class="menu-btn hidden" id="menu-btn" onclick="toggleMenu()">⋮</button>
+        </div>
+
+        <!-- Toast Notification -->
+        <div class="toast" id="toast">
+            <span id="toast-message">Notifikasi</span>
+        </div>
+
+        <!-- Modal Overlay -->
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal">
+                <h3 id="modal-title">Konfirmasi</h3>
+                <p id="modal-message"></p>
+                <div id="modal-policy" class="modal-policy hidden"></div>
+                <div class="modal-buttons">
+                    <button class="btn btn-outline" onclick="closeModal()">Batal</button>
+                    <button class="btn" id="modal-confirm-btn" onclick="confirmAction()">Konfirmasi</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. LOGIN SCREEN -->
+        <div id="screen-login" class="content active">
+            <div class="text-center" style="margin: 50px 0 40px;">
+                <div style="font-size: 60px; margin-bottom: 16px;">🎾</div>
+                <h2 style="font-size: 26px; margin-bottom: 8px; color: var(--text-main);">Selamat Datang</h2>
+                <p class="text-sub">Masuk untuk memesan lapangan</p>
+            </div>
+
+            <div class="info-box">
+                <span class="icon">💡</span>
+                <span>Anda harus mendaftar akun terlebih dahulu untuk bisa masuk.</span>
+            </div>
+
+            <div class="input-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" placeholder="nama@email.com" autocomplete="email">
+                <div class="error-message" id="login-email-error">Email harus diisi</div>
+            </div>
+
+            <div class="input-group">
+                <label for="login-password">Kata Sandi</label>
+                <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+                <div class="error-message" id="login-password-error">Kata sandi harus diisi</div>
+            </div>
+
+            <button class="btn" onclick="handleLogin()">
+                <span>Masuk</span>
+            </button>
+
+            <p class="text-center mt-4 text-sm">
+                Belum punya akun? 
+                <a href="#" style="color: var(--primary); font-weight: 600;" onclick="navigateTo('screen-register')">Daftar Sekarang</a>
+            </p>
+
+            <div class="text-center mt-6">
+                <p class="text-xs text-light">Demo: Daftarkan akun baru untuk mencoba semua fitur</p>
+            </div>
+        </div>
+
+        <!-- 2. REGISTER SCREEN -->
+        <div id="screen-register" class="content">
+            <div class="text-center" style="margin: 30px 0 30px;">
+                <h2 style="font-size: 24px; margin-bottom: 8px;">Buat Akun Baru</h2>
+                <p class="text-sub">Lengkapi data untuk mulai memesan</p>
+            </div>
+
+            <div class="input-group">
+                <label for="register-name">Nama Lengkap</label>
+                <input type="text" id="register-name" placeholder="Contoh: John Doe" autocomplete="name">
+                <div class="error-message" id="register-name-error">Nama harus diisi</div>
+            </div>
+
+            <div class="input-group">
+                <label for="register-email">Email</label>
+                <input type="email" id="register-email" placeholder="nama@email.com" autocomplete="email">
+                <div class="error-message" id="register-email-error">Email harus diisi</div>
+            </div>
+
+            <div class="input-group">
+                <label for="register-password">Kata Sandi</label>
+                <input type="password" id="register-password" placeholder="Minimal 6 karakter" autocomplete="new-password">
+                <div class="error-message" id="register-password-error">Kata sandi minimal 6 karakter</div>
+            </div>
+
+            <div class="input-group">
+                <label for="register-confirm-password">Konfirmasi Kata Sandi</label>
+                <input type="password" id="register-confirm-password" placeholder="Ulangi kata sandi" autocomplete="new-password">
+                <div class="error-message" id="register-confirm-error">Kata sandi tidak cocok</div>
+            </div>
+
+            <div class="policy-box">
+                <strong>📋 Ketentuan:</strong><br>
+                • Dengan mendaftar, Anda menyetujui syarat & ketentuan<br>
+                • Email akan digunakan untuk login dan notifikasi<br>
+                • Password minimal 6 karakter
+            </div>
+
+            <button class="btn" onclick="handleRegister()">
+                <span>Daftar</span>
+            </button>
+
+            <p class="text-center mt-4 text-sm">
+                Sudah punya akun? 
+                <a href="#" style="color: var(--primary); font-weight: 600;" onclick="navigateTo('screen-login')">Masuk</a>
+            </p>
+        </div>
+
+        <!-- 3. HOME SCREEN -->
+        <div id="screen-home" class="content">
+            <div class="mb-4">
+                <h2 style="font-size: 22px; margin-bottom: 4px;">Halo, <span id="user-name-display" class="text-primary">Pengguna</span> 👋</h2>
+                <p class="text-sub">Siap untuk bertanding hari ini?</p>
+            </div>
+
+            <!-- Active Booking Card -->
+            <div class="card highlight" id="active-booking-card">
+                <div class="flex-between mb-2">
+                    <span class="status-badge status-active">⚡ Sedang Berjalan</span>
+                    <span class="text-sm text-sub" id="active-booking-date">Senin, 18 Mar</span>
+                </div>
+                <h3 class="font-semibold" id="active-booking-court">Lapangan A</h3>
+                <p class="text-sm text-sub" id="active-booking-time">15.00 – 16.00 WIB</p>
+                <p class="text-xs text-light mt-2" id="active-booking-code">Kode: SC-2403</p>
+                <div class="btn-group mt-3">
+                    <button class="btn btn-warning btn-sm" onclick="openRescheduleModal()">🔄 Ubah</button>
+                    <button class="btn btn-danger btn-sm" onclick="openCancelModal()">❌ Batal</button>
+                </div>
+            </div>
+
+            <!-- No Active Booking State -->
+            <div class="card warning hidden" id="no-booking-card">
+                <div class="text-center" style="padding: 20px 0;">
+                    <div style="font-size: 40px; margin-bottom: 12px;">📅</div>
+                    <h4 class="font-semibold mb-2">Belum Ada Pesanan Aktif</h4>
+                    <p class="text-sm text-sub mb-3">Yuk pesan lapangan sekarang!</p>
+                    <button class="btn btn-sm" onclick="navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1])">
+                        🎾 Pesan Lapangan
+                    </button>
+                </div>
+            </div>
+
+            <h3 class="section-title">Lapangan Tersedia</h3>
+
+            <div class="card clickable" onclick="navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1])">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="font-semibold">🏟️ Lapangan A</h4>
+                        <p class="text-sm text-sub">Rp 50.000 / jam • Standar</p>
+                    </div>
+                    <span class="status-badge status-available">✓ Tersedia</span>
+                </div>
+            </div>
+
+            <div class="card clickable" onclick="navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1])">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="font-semibold">🏟️ Lapangan B</h4>
+                        <p class="text-sm text-sub">Rp 50.000 / jam • Standar</p>
+                    </div>
+                    <span class="status-badge status-full">✕ Penuh</span>
+                </div>
+            </div>
+
+            <div class="card clickable" onclick="navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1])">
+                <div class="flex-between">
+                    <div>
+                        <h4 class="font-semibold">🏟️ Lapangan C</h4>
+                        <p class="text-sm text-sub">Rp 60.000 / jam • Premium</p>
+                    </div>
+                    <span class="status-badge status-available">✓ Tersedia</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card mt-4" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none;">
+                <div class="flex-between">
+                    <div>
+                        <p class="text-sm" style="opacity: 0.9;">Total Booking</p>
+                        <h3 style="font-size: 28px; font-weight: 800;" id="total-bookings">0</h3>
+                    </div>
+                    <div style="text-align: right;">
+                        <p class="text-sm" style="opacity: 0.9;">Member Sejak</p>
+                        <p class="font-semibold" id="member-since">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SCHEDULE SCREEN -->
+        <div id="screen-schedule" class="content">
+            <div class="text-center mb-4">
+                <h3 class="font-semibold" style="font-size: 20px;">Pilih Jadwal</h3>
+                <p class="text-sub text-sm" id="selected-date-display">Senin, 18 Maret 2026</p>
+            </div>
+
+            <!-- Date Selector -->
+            <div class="date-scroll" id="date-scroll"></div>
+
+            <!-- Court A -->
+            <div class="mb-4">
+                <div class="flex-between mb-2">
+                    <h4 class="font-semibold">🏟️ Lapangan A</h4>
+                    <span class="text-sm text-sub">Rp 50.000/jam</span>
+                </div>
+                <div class="court-grid" id="court-a-slots"></div>
+            </div>
+
+            <!-- Court B -->
+            <div class="mb-4">
+                <div class="flex-between mb-2">
+                    <h4 class="font-semibold">🏟️ Lapangan B</h4>
+                    <span class="text-sm text-sub">Rp 50.000/jam</span>
+                </div>
+                <div class="court-grid" id="court-b-slots"></div>
+            </div>
+
+            <!-- Court C -->
+            <div class="mb-4">
+                <div class="flex-between mb-2">
+                    <h4 class="font-semibold">🏟️ Lapangan C</h4>
+                    <span class="text-sm text-sub">Rp 60.000/jam</span>
+                </div>
+                <div class="court-grid" id="court-c-slots"></div>
+            </div>
+
+            <div class="policy-box">
+                <strong>📋 Info:</strong><br>
+                • Pilih slot yang tersedia (tidak abu-abu)<br>
+                • Booking minimal 1 jam sebelum waktu main<br>
+                • Maksimal booking 3 jam per sesi
+            </div>
+
+            <button class="btn" id="btn-to-booking" onclick="navigateTo('screen-booking')" disabled>
+                <span>Lanjut Booking</span>
+            </button>
+        </div>
+
+        <!-- 5. BOOKING SCREEN -->
+        <div id="screen-booking" class="content">
+            <h3 class="font-semibold mb-3" style="font-size: 20px;">Konfirmasi Pesanan</h3>
+
+            <div class="card">
+                <div class="input-group mb-2">
+                    <label class="text-sub">Lapangan</label>
+                    <div class="font-semibold" id="booking-court-display">Lapangan A</div>
+                </div>
+                <div class="input-group mb-2">
+                    <label class="text-sub">Tanggal</label>
+                    <div id="booking-date-display">Senin, 18 Maret 2026</div>
+                </div>
+                <div class="input-group mb-2">
+                    <label class="text-sub">Jam Mulai</label>
+                    <div class="flex gap-2" id="booking-time-display">
+                        <div class="time-slot selected" style="flex:1; padding: 10px;">14.00</div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="text-sub">Durasi</label>
+                    <select id="booking-duration" onchange="updateTotal()">
+                        <option value="1">1 Jam (Selesai 15.00)</option>
+                        <option value="2">2 Jam (Selesai 16.00)</option>
+                        <option value="3">3 Jam (Selesai 17.00)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h4 class="font-semibold mb-3">💰 Ringkasan Biaya</h4>
+                <div class="flex-between mb-2">
+                    <span class="text-sub">Harga Lapangan</span>
+                    <span id="court-price">Rp 50.000</span>
+                </div>
+                <div class="flex-between mb-2">
+                    <span class="text-sub">Durasi</span>
+                    <span id="duration-display">1 Jam</span>
+                </div>
+                <div class="flex-between mb-2">
+                    <span class="text-sub">Biaya Layanan</span>
+                    <span class="text-success">Rp 0 (Gratis)</span>
+                </div>
+                <hr style="border: 0; border-top: 2px dashed var(--border); margin: 12px 0;">
+                <div class="flex-between" style="font-weight: 800; font-size: 20px;">
+                    <span>Total</span>
+                    <span class="text-primary" id="total-price">Rp 50.000</span>
+                </div>
+            </div>
+
+            <div class="policy-box">
+                <strong>⚠️ Penting:</strong><br>
+                • Pastikan jadwal sudah benar sebelum bayar<br>
+                • Pembatalan maksimal 24 jam sebelum jadwal<br>
+                • Keterlambatan >15 menit = booking hangus
+            </div>
+
+            <button class="btn" onclick="navigateTo('screen-payment')">
+                <span>Lanjut ke Pembayaran →</span>
+            </button>
+            <button class="btn btn-outline" onclick="navigateTo('screen-schedule')">
+                <span>← Kembali</span>
+            </button>
+        </div>
+
+        <!-- 6. PAYMENT SCREEN -->
+        <div id="screen-payment" class="content">
+            <h3 class="font-semibold mb-3" style="font-size: 20px;">💳 Pembayaran</h3>
+
+            <div class="card text-center" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border: none;">
+                <p class="text-sm" style="opacity: 0.9;">Total Pembayaran</p>
+                <h2 style="font-size: 36px; font-weight: 800;" id="payment-total">Rp 50.000</h2>
+            </div>
+
+            <div class="input-group mt-4">
+                <label class="font-semibold">Pilih Metode Pembayaran</label>
+
+                <div class="card clickable mt-2" style="padding: 16px; border: 2px solid var(--primary);" onclick="selectPayment(this, 'bank')">
+                    <div class="flex-between items-center">
+                        <div class="flex items-center gap-4">
+                            <span style="font-size: 24px;">🏦</span>
+                            <div>
+                                <strong>Transfer Bank</strong>
+                                <p class="text-sm text-sub">BCA, BRI, Mandiri, BNI</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment" checked>
+                    </div>
+                </div>
+
+                <div class="card clickable mt-2" style="padding: 16px;" onclick="selectPayment(this, 'qris')">
+                    <div class="flex-between items-center">
+                        <div class="flex items-center gap-4">
+                            <span style="font-size: 24px;">📱</span>
+                            <div>
+                                <strong>QRIS (E-Wallet)</strong>
+                                <p class="text-sm text-sub">GoPay, OVO, Dana, ShopeePay</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment">
+                    </div>
+                </div>
+
+                <div class="card clickable mt-2" style="padding: 16px;" onclick="selectPayment(this, 'card')">
+                    <div class="flex-between items-center">
+                        <div class="flex items-center gap-4">
+                            <span style="font-size: 24px;">💳</span>
+                            <div>
+                                <strong>Kartu Kredit/Debit</strong>
+                                <p class="text-sm text-sub">Visa, Mastercard</p>
+                            </div>
+                        </div>
+                        <input type="radio" name="payment">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-success" onclick="completeBooking()">
+                <span>✅ Bayar Sekarang</span>
+            </button>
+
+            <div class="trust-badge flex-center mt-3 gap-2">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20" class="text-success">
+                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                </svg>
+                <span class="text-sm text-sub">Transaksi Anda aman dan terenkripsi</span>
+            </div>
+        </div>
+
+        <!-- 7. SUCCESS SCREEN -->
+        <div id="screen-success" class="content">
+            <div class="text-center" style="margin: 40px 0;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 40px; box-shadow: var(--shadow);">✓</div>
+                <h2 style="font-size: 24px; margin-bottom: 8px;">Pemesanan Berhasil!</h2>
+                <p class="text-sub">Siap untuk bertanding? 🎾</p>
+            </div>
+
+            <div class="card text-center" style="border: 2px solid var(--success);">
+                <p class="text-sm text-sub mb-2">Kode Booking Anda</p>
+                <h3 style="letter-spacing: 3px; font-size: 24px; font-weight: 800; color: var(--primary);" id="booking-code">SC-2403</h3>
+                <hr style="border: 0; border-top: 2px dashed var(--border); margin: 20px 0;">
+                <div class="flex-between text-sm mb-2">
+                    <span class="text-sub">Lapangan</span>
+                    <span class="font-semibold" id="success-court">Lapangan A</span>
+                </div>
+                <div class="flex-between text-sm mb-2">
+                    <span class="text-sub">Tanggal</span>
+                    <span class="font-semibold" id="success-date">Senin, 18 Mar</span>
+                </div>
+                <div class="flex-between text-sm">
+                    <span class="text-sub">Waktu</span>
+                    <span class="font-semibold" id="success-time">14.00 – 15.00 WIB</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <span class="icon">📱</span>
+                <span>Kode booking telah dikirim ke email Anda</span>
+            </div>
+
+            <button class="btn" onclick="navigateTo('screen-home')">
+                <span>🏠 Kembali ke Beranda</span>
+            </button>
+            <button class="btn btn-outline" onclick="showToast('📅 Ditambahkan ke kalender', 'success')">
+                <span>📅 Tambah ke Kalender</span>
+            </button>
+            <button class="btn btn-outline" onclick="shareBooking()">
+                <span>🔗 Bagikan Booking</span>
+            </button>
+        </div>
+
+        <!-- 8. HISTORY SCREEN -->
+        <div id="screen-history" class="content">
+            <h3 class="font-semibold mb-3" style="font-size: 20px;">📜 Riwayat Pemesanan</h3>
+
+            <div class="flex gap-2 mb-4">
+                <button class="btn btn-sm btn-outline" id="filter-all" onclick="filterHistory('all')" style="flex:1;">Semua</button>
+                <button class="btn btn-sm" id="filter-active" onclick="filterHistory('active')" style="flex:1;">Aktif</button>
+                <button class="btn btn-sm btn-outline" id="filter-completed" onclick="filterHistory('completed')" style="flex:1;">Selesai</button>
+            </div>
+
+            <div id="history-list">
+                <!-- History items will be rendered here -->
+            </div>
+
+            <div class="empty-state hidden" id="empty-history">
+                <div class="icon">📋</div>
+                <h3>Belum Ada Riwayat</h3>
+                <p class="text-sm">Pesanan Anda akan muncul di sini</p>
+                <button class="btn btn-sm mt-3" onclick="navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1])">
+                    Pesan Sekarang
+                </button>
+            </div>
+        </div>
+
+        <!-- 9. PROFILE SCREEN -->
+        <div id="screen-profile" class="content">
+            <div class="text-center mb-4">
+                <div class="profile-avatar" id="profile-avatar">P</div>
+                <h3 class="font-semibold" style="font-size: 20px;" id="profile-name">Putri Rahayu</h3>
+                <p class="text-sub text-sm" id="profile-email">putri@email.com</p>
+                <p class="text-xs text-light mt-2" id="profile-member-since">Member sejak Januari 2026</p>
+            </div>
+
+            <div class="card" style="padding: 0;">
+                <div class="menu-item" onclick="navigateTo('screen-edit-profile')">
+                    <span class="flex items-center gap-4">
+                        <span style="font-size: 20px;">✏️</span>
+                        <span>Edit Profil</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="navigateTo('screen-notifications')">
+                    <span class="flex items-center gap-4">
+                        <span style="font-size: 20px;">🔔</span>
+                        <span>Notifikasi</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="navigateTo('screen-help')">
+                    <span class="flex items-center gap-4">
+                        <span style="font-size: 20px;">❓</span>
+                        <span>Bantuan</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item" onclick="navigateTo('screen-about')">
+                    <span class="flex items-center gap-4">
+                        <span style="font-size: 20px;">ℹ️</span>
+                        <span>Tentang</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item danger" onclick="confirmLogout()">
+                    <span class="flex items-center gap-4">
+                        <span style="font-size: 20px;">🚪</span>
+                        <span>Keluar</span>
+                    </span>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <!-- Stats Card -->
+            <div class="card mt-4">
+                <h4 class="font-semibold mb-3">📊 Statistik Anda</h4>
+                <div class="flex-between">
+                    <div class="text-center" style="flex: 1;">
+                        <p class="text-lg font-bold text-primary" id="stat-total">0</p>
+                        <p class="text-xs text-sub">Total Booking</p>
+                    </div>
+                    <div class="text-center" style="flex: 1;">
+                        <p class="text-lg font-bold text-success" id="stat-completed">0</p>
+                        <p class="text-xs text-sub">Selesai</p>
+                    </div>
+                    <div class="text-center" style="flex: 1;">
+                        <p class="text-lg font-bold text-warning" id="stat-spent">0</p>
+                        <p class="text-xs text-sub">Total (RB)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. EDIT PROFILE SCREEN -->
+        <div id="screen-edit-profile" class="content">
+            <h3 class="font-semibold mb-2" style="font-size: 20px;">✏️ Edit Profil</h3>
+            <p class="text-sub mb-4">Perbarui informasi akun Anda</p>
+
+            <div class="input-group">
+                <label for="edit-name">Nama Lengkap</label>
+                <input type="text" id="edit-name" placeholder="Nama Lengkap">
+                <div class="error-message" id="edit-name-error">Nama harus diisi</div>
+            </div>
+
+            <div class="input-group">
+                <label for="edit-email">Email</label>
+                <input type="email" id="edit-email" placeholder="nama@email.com">
+                <div class="error-message" id="edit-email-error">Email harus diisi</div>
+            </div>
+
+            <div class="input-group">
+                <label for="edit-phone">Nomor WhatsApp</label>
+                <input type="tel" id="edit-phone" placeholder="0812-3456-7890">
+                <div class="error-message" id="edit-phone-error">Format nomor tidak valid</div>
+            </div>
+
+            <div class="section-title">Ubah Kata Sandi</div>
+            <p class="text-xs text-sub mb-3">Kosongkan jika tidak ingin mengubah</p>
+
+            <div class="input-group">
+                <label for="edit-password">Kata Sandi Baru</label>
+                <input type="password" id="edit-password" placeholder="Minimal 6 karakter">
+                <div class="error-message" id="edit-password-error">Kata sandi minimal 6 karakter</div>
+            </div>
+
+            <div class="input-group">
+                <label for="edit-confirm-password">Konfirmasi Kata Sandi</label>
+                <input type="password" id="edit-confirm-password" placeholder="Konfirmasi kata sandi baru">
+                <div class="error-message" id="edit-confirm-error">Kata sandi tidak cocok</div>
+            </div>
+
+            <button class="btn" onclick="saveProfile()">
+                <span>💾 Simpan Perubahan</span>
+            </button>
+            <button class="btn btn-outline" onclick="navigateTo('screen-profile')">
+                <span>← Batal</span>
+            </button>
+        </div>
+
+        <!-- 11. NOTIFICATIONS SCREEN -->
+        <div id="screen-notifications" class="content">
+            <h3 class="font-semibold mb-2" style="font-size: 20px;">🔔 Notifikasi</h3>
+            <p class="text-sub mb-4">Kelola notifikasi yang ingin Anda terima</p>
+
+            <div class="card" style="padding: 0;">
+                <div class="menu-item" style="border-bottom: 1px solid var(--border);">
+                    <div style="flex: 1;">
+                        <div class="flex items-center gap-2">
+                            <strong>📧 Notifikasi Booking</strong>
+                        </div>
+                        <p class="text-sm text-sub">Konfirmasi pemesanan lapangan</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'booking')"></div>
+                </div>
+
+                <div class="menu-item" style="border-bottom: 1px solid var(--border);">
+                    <div style="flex: 1;">
+                        <strong>⏰ Pengingat Jadwal</strong>
+                        <p class="text-sm text-sub">Reminder 1 jam sebelum bermain</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleNotification(this, 'reminder')"></div>
+                </div>
+
+                <div class="menu-item" style="border-bottom: 1px solid var(--border);">
+                    <div style="flex: 1;">
+                        <strong>🎁 Promo & Diskon</strong>
+                        <p class="text-sm text-sub">Info promo dan penawaran khusus</p>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'promo')"></div>
+                </div>
+
+                <div class="menu-item">
+                    <div style="flex: 1;">
+                        <strong>📰 Berita Lapangan</strong>
+                        <p class="text-sm text-sub">Update kondisi dan fasilitas</p>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleNotification(this, 'news')"></div>
+                </div>
+            </div>
+
+            <div class="info-box mt-4">
+                <span class="icon">💡</span>
+                <span>Notifikasi akan dikirim via email dan push notification (jika diaktifkan)</span>
+            </div>
+
+            <button class="btn btn-outline" onclick="navigateTo('screen-profile')">
+                <span>← Kembali</span>
+            </button>
+        </div>
+
+        <!-- 12. HELP SCREEN -->
+        <div id="screen-help" class="content">
+            <h3 class="font-semibold mb-2" style="font-size: 20px;">❓ Pusat Bantuan</h3>
+            <p class="text-sub mb-4">Pertanyaan yang sering diajukan</p>
+
+            <div class="card">
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Bagaimana cara memesan lapangan?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        1. Pilih lapangan yang tersedia di beranda<br>
+                        2. Pilih tanggal dan jam yang diinginkan<br>
+                        3. Tentukan durasi bermain<br>
+                        4. Lanjutkan ke pembayaran<br>
+                        5. Setelah pembayaran berhasil, Anda akan menerima kode booking via email
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Bagaimana cara membatalkan pesanan?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        1. Buka halaman Beranda<br>
+                        2. Klik "Batalkan" pada pesanan aktif<br>
+                        3. Konfirmasi pembatalan<br>
+                        4. Refund akan diproses sesuai kebijakan:<br>
+                        • >24 jam: 100% refund<br>
+                        • <24 jam: 50% refund<br>
+                        • No-show: Tidak ada refund
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Bisa ubah jadwal setelah booking?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Ya, Anda dapat mengubah jadwal maksimal 24 jam sebelum waktu bermain, selama lapangan yang diinginkan masih tersedia. Klik "Ubah Jadwal" pada pesanan aktif di beranda.
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Metode pembayaran apa yang tersedia?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Kami menerima:<br>
+                        • Transfer Bank (BCA, BRI, Mandiri, BNI)<br>
+                        • QRIS (GoPay, OVO, Dana, ShopeePay)<br>
+                        • Kartu Kredit/Debit (Visa, Mastercard)
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Apa yang terjadi jika saya terlambat?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        Anda memiliki toleransi 15 menit dari jam mulai. Jika lebih dari 15 menit tanpa konfirmasi, booking dianggap hangus dan tidak ada refund.
+                    </div>
+                </div>
+
+                <div class="faq-item" onclick="toggleFaq(this)">
+                    <div class="faq-question">
+                        Berapa lama konfirmasi pembayaran?
+                        <span>▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        • QRIS: Instan (otomatis)<br>
+                        • Transfer Bank: Maksimal 15 menit<br>
+                        • Kartu Kredit/Debit: Instan
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">📞 Hubungi Kami</div>
+            <div class="card">
+                <div class="input-group">
+                    <label for="help-subject">Subjek</label>
+                    <select id="help-subject">
+                        <option>Pertanyaan Umum</option>
+                        <option>Masalah Pembayaran</option>
+                        <option>Masalah Booking</option>
+                        <option>Keluhan & Saran</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="help-message">Pesan</label>
+                    <textarea id="help-message" placeholder="Jelaskan masalah Anda secara detail..."></textarea>
+                    <div class="error-message" id="help-message-error">Pesan harus diisi</div>
+                </div>
+                <button class="btn" onclick="submitHelp()">
+                    <span>📤 Kirim Pesan</span>
+                </button>
+            </div>
+
+            <div class="text-center mt-4">
+                <p class="text-sub text-sm">Atau hubungi kami langsung:</p>
+                <p class="text-primary font-semibold mt-2">📧 support@smashcourt.com</p>
+                <p class="text-primary font-semibold">📱 +62 812-3456-7890</p>
+                <p class="text-primary font-semibold">🕐 Senin-Minggu, 08.00-21.00 WIB</p>
+            </div>
+
+            <button class="btn btn-outline mt-4" onclick="navigateTo('screen-profile')">
+                <span>← Kembali</span>
+            </button>
+        </div>
+
+        <!-- 13. ABOUT SCREEN -->
+        <div id="screen-about" class="content">
+            <div class="text-center" style="margin: 40px 0;">
+                <div style="font-size: 60px; margin-bottom: 16px;">🎾</div>
+                <h2 style="font-size: 24px; margin-bottom: 8px;">SmashCourt</h2>
+                <p class="text-sub">Versi 1.0.0</p>
+            </div>
+
+            <div class="card">
+                <h4 class="font-semibold mb-3">📱 Tentang Aplikasi</h4>
+                <p class="text-sub text-sm" style="line-height: 1.6;">
+                    SmashCourt adalah aplikasi booking lapangan tenis & bulu tangkis yang memudahkan Anda memesan lapangan kapan saja, di mana saja.
+                </p>
+            </div>
+
+            <div class="card">
+                <h4 class="font-semibold mb-3">👥 Tim Pengembang</h4>
+                <p class="text-sub text-sm">Dibuat dengan ❤️ untuk komunitas olahraga Indonesia</p>
+            </div>
+
+            <div class="card">
+                <h4 class="font-semibold mb-3">📄 Kebijakan</h4>
+                <div class="menu-item" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                    <span>Syarat & Ketentuan</span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item" style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                    <span>Kebijakan Privasi</span>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="menu-item" style="padding: 12px 0;">
+                    <span>Kebijakan Refund</span>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <div class="text-center mt-6">
+                <p class="text-xs text-light">© 2026 SmashCourt. All rights reserved.</p>
+            </div>
+
+            <button class="btn btn-outline mt-4" onclick="navigateTo('screen-profile')">
+                <span>← Kembali</span>
+            </button>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav" id="bottom-nav">
+            <div class="nav-item active" onclick="navigateTo('screen-home', this)">
+                <span class="nav-icon">🏠</span>
+                <span>Beranda</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('screen-schedule', this)">
+                <span class="nav-icon">📅</span>
+                <span>Jadwal</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('screen-history', this)">
+                <span class="nav-icon">📜</span>
+                <span>Riwayat</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('screen-profile', this)">
+                <span class="nav-icon">👤</span>
+                <span>Profil</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DATA STORE ====================
+        const DB = {
+            getKey: (key) => JSON.parse(localStorage.getItem(key)) || null,
+            setKey: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
+            removeKey: (key) => localStorage.removeItem(key),
+            
+            // User Management
+            getUser: (email) => DB.getKey('smashcourt_user_' + email),
+            setUser: (email, data) => DB.setKey('smashcourt_user_' + email, data),
+            removeUser: (email) => DB.removeKey('smashcourt_user_' + email),
+            getCurrentUser: () => DB.getKey('smashcourt_current_user'),
+            setCurrentUser: (email) => DB.setKey('smashcourt_current_user', email),
+            clearCurrentUser: () => DB.removeKey('smashcourt_current_user'),
+            
+            // All Users (for admin purposes)
+            getAllUsers: () => {
+                const users = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('smashcourt_user_') && !key.includes('current_user')) {
+                        users.push(DB.getKey(key));
+                    }
+                }
+                return users;
+            }
+        };
+
+        // ==================== STATE ====================
+        let currentUser = null;
+        let selectedDate = new Date();
+        let selectedCourt = null;
+        let selectedTime = null;
+        let bookingData = {
+            court: '',
+            date: '',
+            time: '',
+            duration: 1,
+            total: 0,
+            code: '',
+            status: 'active',
+            createdAt: null
+        };
+        let navHistory = [];
+        let modalAction = null;
+        let historyFilter = 'all';
+
+        // ==================== INITIALIZATION ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            initDateSelector();
+            generateTimeSlots();
+        });
+
+        function checkAuth() {
+            const currentEmail = DB.getCurrentUser();
+            if (currentEmail) {
+                const user = DB.getUser(currentEmail);
+                if (user) {
+                    currentUser = user;
+                    navigateTo('screen-home');
+                } else {
+                    DB.clearCurrentUser();
+                    navigateTo('screen-login');
+                }
+            } else {
+                navigateTo('screen-login');
+            }
+        }
+
+        // ==================== NAVIGATION ====================
+        function navigateTo(screenId, navElement = null) {
+            const currentScreen = document.querySelector('.content.active');
+            if (currentScreen && screenId !== currentScreen.id && !['screen-login', 'screen-register'].includes(screenId)) {
+                navHistory.push(currentScreen.id);
+            }
+
+            updateBackButton();
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+
+            const nav = document.getElementById('bottom-nav');
+            const header = document.getElementById('app-header');
+            const backBtn = document.getElementById('back-btn');
+
+            if (['screen-login', 'screen-register'].includes(screenId)) {
+                nav.classList.add('hidden');
+                header.style.display = 'block';
+                backBtn.classList.add('hidden');
+                document.getElementById('header-title').textContent = 'SmashCourt';
+            } else if (['screen-edit-profile', 'screen-notifications', 'screen-help', 'screen-about'].includes(screenId)) {
+                nav.classList.add('hidden');
+                header.style.display = 'block';
+                backBtn.classList.remove('hidden');
+                
+                const titles = {
+                    'screen-edit-profile': 'Edit Profil',
+                    'screen-notifications': 'Notifikasi',
+                    'screen-help': 'Bantuan',
+                    'screen-about': 'Tentang'
+                };
+                document.getElementById('header-title').textContent = titles[screenId];
+
+                if (screenId === 'screen-edit-profile') loadProfileData();
+            } else {
+                nav.classList.remove('hidden');
+                header.style.display = screenId === 'screen-home' ? 'block' : 'none';
+                backBtn.classList.add('hidden');
+            }
+
+            if (navElement) {
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                navElement.classList.add('active');
+            }
+
+            document.querySelector('.content.active').scrollTop = 0;
+
+            // Screen-specific initialization
+            if (screenId === 'screen-schedule') {
+                initDateSelector();
+                generateTimeSlots();
+            }
+            if (screenId === 'screen-home' && currentUser) {
+                updateHomeScreen();
+            }
+            if (screenId === 'screen-profile' && currentUser) {
+                updateProfileScreen();
+            }
+            if (screenId === 'screen-history') {
+                renderHistory();
+            }
+        }
+
+        function goBack() {
+            if (navHistory.length > 0) {
+                const previousScreen = navHistory.pop();
+                const navItems = document.querySelectorAll('.nav-item');
+                const screenToNav = {
+                    'screen-home': navItems[0],
+                    'screen-schedule': navItems[1],
+                    'screen-history': navItems[2],
+                    'screen-profile': navItems[3]
+                };
+                navigateTo(previousScreen, screenToNav[previousScreen]);
+            } else {
+                navigateTo('screen-home');
+            }
+        }
+
+        function updateBackButton() {
+            const backBtn = document.getElementById('back-btn');
+            const currentScreen = document.querySelector('.content.active');
+            if (currentScreen) {
+                const isSubScreen = ['screen-edit-profile', 'screen-notifications', 'screen-help', 'screen-about'].includes(currentScreen.id);
+                backBtn.classList.toggle('hidden', !isSubScreen);
+            }
+        }
+
+        // ==================== TOAST NOTIFICATIONS ====================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.className = 'toast show';
+            if (type === 'success') toast.classList.add('success');
+            if (type === 'error') toast.classList.add('error');
+            if (type === 'warning') toast.classList.add('warning');
+            
+            setTimeout(() => {
+                toast.classList.remove('show', 'success', 'error', 'warning');
+            }, 2500);
+        }
+
+        // ==================== MODAL ====================
+        function openModal(title, message, policy, confirmText, confirmClass, action) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            const policyEl = document.getElementById('modal-policy');
+            if (policy) {
+                policyEl.innerHTML = policy;
+                policyEl.classList.remove('hidden');
+            } else {
+                policyEl.classList.add('hidden');
+            }
+            const confirmBtn = document.getElementById('modal-confirm-btn');
+            confirmBtn.textContent = confirmText;
+            confirmBtn.className = 'btn ' + (confirmClass || '');
+            modalAction = action;
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+            modalAction = null;
+        }
+
+        function confirmAction() {
+            if (modalAction) {
+                modalAction();
+            }
+            closeModal();
+        }
+
+        // ==================== AUTHENTICATION ====================
+        function handleLogin() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+            
+            hideError('login-email');
+            hideError('login-password');
+
+            if (!email) {
+                showError('login-email', 'Email harus diisi');
+                return;
+            }
+
+            if (!password) {
+                showError('login-password', 'Kata sandi harus diisi');
+                return;
+            }
+
+            const user = DB.getUser(email);
+            
+            if (user) {
+                if (user.password === password) {
+                    currentUser = user;
+                    DB.setCurrentUser(email);
+                    showToast('✅ Login berhasil!', 'success');
+                    setTimeout(() => navigateTo('screen-home'), 500);
+                } else {
+                    showError('login-password', 'Kata sandi salah');
+                }
+            } else {
+                showError('login-email', 'Email belum terdaftar. Silakan daftar terlebih dahulu.');
+            }
+        }
+
+        function handleRegister() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('register-email').value.trim().toLowerCase();
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            hideError('register-name');
+            hideError('register-email');
+            hideError('register-password');
+            hideError('register-confirm');
+
+            let isValid = true;
+
+            if (!name) {
+                showError('register-name', 'Nama harus diisi');
+                isValid = false;
+            }
+
+            if (!email) {
+                showError('register-email', 'Email harus diisi');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('register-email', 'Format email tidak valid');
+                isValid = false;
+            }
+
+            if (!password || password.length < 6) {
+                showError('register-password', 'Kata sandi minimal 6 karakter');
+                isValid = false;
+            }
+
+            if (password !== confirmPassword) {
+                showError('register-confirm', 'Kata sandi tidak cocok');
+                isValid = false;
+            }
+
+            if (isValid) {
+                if (DB.getUser(email)) {
+                    showError('register-email', 'Email sudah terdaftar');
+                    return;
+                }
+
+                const userData = {
+                    name: name,
+                    email: email,
+                    password: password,
+                    phone: '',
+                    registeredAt: new Date().toISOString(),
+                    notifications: {
+                        booking: true,
+                        reminder: true,
+                        promo: false,
+                        news: false
+                    },
+                    bookings: [],
+                    activeBooking: null
+                };
+
+                DB.setUser(email, userData);
+                showToast('✅ Pendaftaran berhasil! Silakan login', 'success');
+                
+                setTimeout(() => {
+                    clearForm(['register-name', 'register-email', 'register-password', 'register-confirm-password']);
+                    navigateTo('screen-login');
+                }, 1000);
+            }
+        }
+
+        function confirmLogout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                showToast('👋 Sampai jumpa lagi!', 'success');
+                DB.clearCurrentUser();
+                currentUser = null;
+                clearForm(['login-email', 'login-password']);
+                navHistory = [];
+                setTimeout(() => navigateTo('screen-login'), 500);
+            }
+        }
+
+        // ==================== PROFILE MANAGEMENT ====================
+        function updateProfileScreen() {
+            if (!currentUser) return;
+            
+            document.getElementById('profile-name').textContent = currentUser.name;
+            document.getElementById('profile-email').textContent = currentUser.email;
+            document.getElementById('profile-avatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            
+            const regDate = new Date(currentUser.registeredAt);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            document.getElementById('profile-member-since').textContent = 
+                `Member sejak ${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+
+            // Update stats
+            const totalBookings = currentUser.bookings ? currentUser.bookings.length : 0;
+            const completedBookings = currentUser.bookings ? currentUser.bookings.filter(b => b.status === 'completed').length : 0;
+            const totalSpent = currentUser.bookings ? currentUser.bookings.reduce((sum, b) => sum + (b.total || 0), 0) : 0;
+
+            document.getElementById('stat-total').textContent = totalBookings;
+            document.getElementById('stat-completed').textContent = completedBookings;
+            document.getElementById('stat-spent').textContent = (totalSpent / 1000).toFixed(0);
+        }
+
+        function loadProfileData() {
+            if (!currentUser) return;
+            
+            document.getElementById('edit-name').value = currentUser.name;
+            document.getElementById('edit-email').value = currentUser.email;
+            document.getElementById('edit-phone').value = currentUser.phone || '';
+            document.getElementById('edit-password').value = '';
+            document.getElementById('edit-confirm-password').value = '';
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('edit-name').value.trim();
+            const email = document.getElementById('edit-email').value.trim().toLowerCase();
+            const phone = document.getElementById('edit-phone').value.trim();
+            const password = document.getElementById('edit-password').value;
+            const confirmPassword = document.getElementById('edit-confirm-password').value;
+            
+            hideError('edit-name');
+            hideError('edit-email');
+            hideError('edit-phone');
+            hideError('edit-password');
+            hideError('edit-confirm');
+
+            let isValid = true;
+
+            if (!name) {
+                showError('edit-name', 'Nama harus diisi');
+                isValid = false;
+            }
+
+            if (!email) {
+                showError('edit-email', 'Email harus diisi');
+                isValid = false;
+            } else if (!isValidEmail(email)) {
+                showError('edit-email', 'Format email tidak valid');
+                isValid = false;
+            }
+
+            if (phone && !isValidPhone(phone)) {
+                showError('edit-phone', 'Format nomor tidak valid (contoh: 0812-3456-7890)');
+                isValid = false;
+            }
+
+            if (password && password.length < 6) {
+                showError('edit-password', 'Kata sandi minimal 6 karakter');
+                isValid = false;
+            }
+
+            if (password && password !== confirmPassword) {
+                showError('edit-confirm', 'Kata sandi tidak cocok');
+                isValid = false;
+            }
+
+            if (isValid) {
+                if (email !== currentUser.email && DB.getUser(email)) {
+                    showError('edit-email', 'Email sudah digunakan akun lain');
+                    return;
+                }
+
+                // Delete old user data if email changed
+                if (email !== currentUser.email) {
+                    DB.removeUser(currentUser.email);
+                }
+
+                // Update user data
+                currentUser.name = name;
+                currentUser.email = email;
+                currentUser.phone = phone;
+                if (password) currentUser.password = password;
+
+                DB.setUser(email, currentUser);
+                DB.setCurrentUser(email);
+
+                showToast('✅ Profil berhasil diperbarui!', 'success');
+                setTimeout(() => navigateTo('screen-profile'), 500);
+            }
+        }
+
+        // ==================== NOTIFICATIONS ====================
+        function toggleNotification(element, type) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            
+            if (currentUser && currentUser.notifications) {
+                currentUser.notifications[type] = isActive;
+                DB.setUser(currentUser.email, currentUser);
+            }
+
+            const messages = {
+                'booking': isActive ? '✅ Notifikasi booking diaktifkan' : '🔕 Notifikasi booking dinonaktifkan',
+                'reminder': isActive ? '✅ Pengingat diaktifkan' : '🔕 Pengingat dinonaktifkan',
+                'promo': isActive ? '✅ Promo diaktifkan' : '🔕 Promo dinonaktifkan',
+                'news': isActive ? '✅ Berita diaktifkan' : '🔕 Berita dinonaktifkan'
+            };
+
+            showToast(messages[type], isActive ? 'success' : 'info');
+        }
+
+        // ==================== DATE & TIME ====================
+        function initDateSelector() {
+            const dateScroll = document.getElementById('date-scroll');
+            const days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            
+            dateScroll.innerHTML = '';
+            
+            for (let i = 0; i < 7; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                
+                const dateItem = document.createElement('div');
+                dateItem.className = `date-item ${i === 0 ? 'active' : ''}`;
+                dateItem.onclick = () => selectDate(date, dateItem);
+                dateItem.innerHTML = `
+                    <div class="day">${days[date.getDay()]}</div>
+                    <div class="date">${date.getDate()}</div>
+                    <div class="month">${months[date.getMonth()]}</div>
+                `;
+                
+                dateScroll.appendChild(dateItem);
+            }
+            
+            updateDateDisplay();
+        }
+
+        function selectDate(date, element) {
+            selectedDate = date;
+            document.querySelectorAll('.date-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            updateDateDisplay();
+            generateTimeSlots();
+        }
+
+        function updateDateDisplay() {
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            
+            const dateStr = `${days[selectedDate.getDay()]}, ${selectedDate.getDate()} ${months[selectedDate.getMonth()]} ${selectedDate.getFullYear()}`;
+            const shortDateStr = `${days[selectedDate.getDay()]}, ${selectedDate.getDate()} ${months[selectedDate.getMonth()].substring(0, 3)}`;
+            
+            document.getElementById('selected-date-display').textContent = dateStr;
+            document.getElementById('booking-date-display').textContent = dateStr;
+            
+            bookingData.date = dateStr;
+        }
+
+        function generateTimeSlots() {
+            const courts = ['court-a-slots', 'court-b-slots', 'court-c-slots'];
+            const times = ['08.00', '09.00', '10.00', '11.00', '13.00', '14.00', '15.00', '16.00', '17.00', '18.00', '19.00', '20.00'];
+            
+            // Simulated availability (in real app, this would come from server)
+            const availability = {
+                'court-a': ['08.00', '10.00', '14.00', '15.00', '17.00', '19.00'],
+                'court-b': ['09.00', '10.00', '14.00', '15.00', '18.00', '20.00'],
+                'court-c': ['08.00', '09.00', '11.00', '13.00', '15.00', '17.00', '19.00']
+            };
+
+            courts.forEach((courtId, index) => {
+                const container = document.getElementById(courtId);
+                container.innerHTML = '';
+                
+                const courtKey = ['court-a', 'court-b', 'court-c'][index];
+                const availableTimes = availability[courtKey];
+
+                times.forEach(time => {
+                    const isAvailable = availableTimes.includes(time);
+                    const slot = document.createElement('div');
+                    slot.className = `time-slot ${!isAvailable ? 'disabled' : ''}`;
+                    slot.innerHTML = `
+                        <div class="time">${time}</div>
+                        <div class="status">${isAvailable ? 'Tersedia' : 'Terisi'}</div>
+                    `;
+                    
+                    if (isAvailable) {
+                        slot.onclick = () => selectTimeSlot(slot, time, courtKey);
+                    }
+                    
+                    container.appendChild(slot);
+                });
+            });
+        }
+
+        function selectTimeSlot(element, time, court) {
+            // Remove selection from all slots
+            document.querySelectorAll('.time-slot').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Add selection to clicked slot
+            element.classList.add('selected');
+            
+            selectedTime = time;
+            selectedCourt = court;
+            
+            bookingData.time = time;
+            bookingData.court = court.replace('court-', 'Lapangan ').toUpperCase();
+            
+            // Enable booking button
+            document.getElementById('btn-to-booking').disabled = false;
+            
+            showToast(`✅ ${bookingData.court} ${time} dipilih`, 'success');
+        }
+
+        // ==================== BOOKING ====================
+        function updateTotal() {
+            const duration = parseInt(document.getElementById('booking-duration').value);
+            const pricePerHour = selectedCourt === 'court-c' ? 60000 : 50000;
+            const total = pricePerHour * duration;
+            
+            bookingData.duration = duration;
+            bookingData.total = total;
+            
+            document.getElementById('court-price').textContent = formatRupiah(pricePerHour);
+            document.getElementById('duration-display').textContent = `${duration} Jam`;
+            document.getElementById('total-price').textContent = formatRupiah(total);
+            document.getElementById('payment-total').textContent = formatRupiah(total);
+        }
+
+        function selectPayment(element, method) {
+            document.querySelectorAll('#screen-payment .card.clickable').forEach(el => {
+                el.style.borderColor = 'var(--border)';
+            });
+            element.style.borderColor = 'var(--primary)';
+            element.querySelector('input[type="radio"]').checked = true;
+            bookingData.paymentMethod = method;
+        }
+
+        function completeBooking() {
+            if (!selectedCourt || !selectedTime) {
+                showToast('⚠️ Pilih lapangan dan waktu terlebih dahulu', 'warning');
+                return;
+            }
+
+            // Generate booking code
+            const code = 'SC-' + Math.floor(Math.random() * 9000 + 1000);
+            bookingData.code = code;
+            bookingData.status = 'active';
+            bookingData.createdAt = new Date().toISOString();
+
+            // Save to user bookings
+            if (currentUser) {
+                if (!currentUser.bookings) currentUser.bookings = [];
+                currentUser.bookings.push({ ...bookingData });
+                currentUser.activeBooking = { ...bookingData };
+                DB.setUser(currentUser.email, currentUser);
+            }
+
+            // Update success screen
+            document.getElementById('booking-code').textContent = code;
+            document.getElementById('success-court').textContent = bookingData.court;
+            document.getElementById('success-date').textContent = bookingData.date.split(',')[0] + ', ' + bookingData.date.split(' ')[1] + ' ' + bookingData.date.split(' ')[2];
+            document.getElementById('success-time').textContent = `${bookingData.time} – ${parseInt(bookingData.time) + bookingData.duration}.00 WIB`;
+
+            showToast('✅ Pembayaran berhasil!', 'success');
+            setTimeout(() => navigateTo('screen-success'), 500);
+        }
+
+        function updateHomeScreen() {
+            const activeCard = document.getElementById('active-booking-card');
+            const noBookingCard = document.getElementById('no-booking-card');
+            
+            if (currentUser && currentUser.activeBooking) {
+                const booking = currentUser.activeBooking;
+                document.getElementById('active-booking-court').textContent = booking.court;
+                document.getElementById('active-booking-time').textContent = `${booking.time} – ${parseInt(booking.time) + booking.duration}.00 WIB`;
+                document.getElementById('active-booking-date').textContent = booking.date.split(',')[0] + ', ' + booking.date.split(' ')[1] + ' ' + booking.date.split(' ')[2];
+                document.getElementById('active-booking-code').textContent = `Kode: ${booking.code}`;
+                activeCard.classList.remove('hidden');
+                noBookingCard.classList.add('hidden');
+            } else {
+                activeCard.classList.add('hidden');
+                noBookingCard.classList.remove('hidden');
+            }
+
+            // Update user name
+            document.getElementById('user-name-display').textContent = currentUser ? currentUser.name.split(' ')[0] : 'Pengguna';
+
+            // Update stats
+            const totalBookings = currentUser && currentUser.bookings ? currentUser.bookings.length : 0;
+            document.getElementById('total-bookings').textContent = totalBookings;
+            
+            if (currentUser && currentUser.registeredAt) {
+                const regDate = new Date(currentUser.registeredAt);
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+                document.getElementById('member-since').textContent = `${months[regDate.getMonth()]} ${regDate.getFullYear()}`;
+            }
+        }
+
+        // ==================== RESCHEDULE & CANCEL ====================
+        function openRescheduleModal() {
+            openModal(
+                '🔄 Ubah Jadwal',
+                'Apakah Anda yakin ingin mengubah jadwal pemesanan ini?',
+                '<strong>📋 Kebijakan:</strong><br>• Perubahan hanya bisa dilakukan minimal 24 jam sebelum jadwal<br>• Booking lama akan dibatalkan<br>• Anda akan diarahkan untuk memilih jadwal baru<br>• Selisih harga akan diproses refund/tambahan',
+                'Ubah Jadwal',
+                'btn-warning',
+                () => {
+                    if (currentUser && currentUser.activeBooking) {
+                        // Move active booking to history with cancelled status
+                        if (!currentUser.bookings) currentUser.bookings = [];
+                        currentUser.bookings.push({
+                            ...currentUser.activeBooking,
+                            status: 'cancelled',
+                            cancelledAt: new Date().toISOString(),
+                            cancelReason: 'Reschedule'
+                        });
+                        currentUser.activeBooking = null;
+                        DB.setUser(currentUser.email, currentUser);
+                    }
+                    showToast('🔄 Silakan pilih jadwal baru', 'info');
+                    setTimeout(() => navigateTo('screen-schedule', document.querySelectorAll('.nav-item')[1]), 500);
+                }
+            );
+        }
+
+        function openCancelModal() {
+            openModal(
+                '❌ Batalkan Pesanan',
+                'Apakah Anda yakin ingin membatalkan pesanan ini?',
+                '<strong>💰 Kebijakan Refund:</strong><br>• >24 jam sebelum jadwal: <strong>100% refund</strong><br>• <24 jam sebelum jadwal: <strong>50% refund</strong><br>• Tidak hadir (no-show): <strong>Tidak ada refund</strong><br><br>Refund akan diproses dalam 3-5 hari kerja.',
+                'Ya, Batalkan',
+                'btn-danger',
+                () => {
+                    if (currentUser && currentUser.activeBooking) {
+                        if (!currentUser.bookings) currentUser.bookings = [];
+                        currentUser.bookings.push({
+                            ...currentUser.activeBooking,
+                            status: 'cancelled',
+                            cancelledAt: new Date().toISOString(),
+                            cancelReason: 'User cancelled',
+                            refundAmount: currentUser.activeBooking.total // Simplified - in real app calculate based on time
+                        });
+                        currentUser.activeBooking = null;
+                        DB.setUser(currentUser.email, currentUser);
+                    }
+                    showToast('❌ Pesanan dibatalkan. Refund akan diproses.', 'success');
+                    setTimeout(() => navigateTo('screen-home'), 500);
+                }
+            );
+        }
+
+        // ==================== HISTORY ====================
+        function renderHistory() {
+            const container = document.getElementById('history-list');
+            const emptyState = document.getElementById('empty-history');
+            
+            if (!currentUser || !currentUser.bookings || currentUser.bookings.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            let bookings = [...currentUser.bookings];
+            
+            if (historyFilter === 'active') {
+                bookings = bookings.filter(b => b.status === 'active');
+            } else if (historyFilter === 'completed') {
+                bookings = bookings.filter(b => ['completed', 'cancelled'].includes(b.status));
+            }
+
+            if (bookings.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.innerHTML = bookings.reverse().map(booking => {
+                const statusClass = {
+                    'active': 'status-active',
+                    'completed': 'status-success',
+                    'cancelled': 'status-cancelled'
+                }[booking.status] || 'status-cancelled';
+
+                const statusText = {
+                    'active': '⚡ Aktif',
+                    'completed': '✓ Selesai',
+                    'cancelled': '✕ Dibatalkan'
+                }[booking.status] || booking.status;
+
+                return `
+                    <div class="card ${booking.status === 'active' ? 'highlight' : ''}">
+                        <div class="flex-between mb-2">
+                            <h4 class="font-semibold">${booking.court}</h4>
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </div>
+                        <p class="text-sm text-sub mb-2">${booking.date} · ${booking.time}–${parseInt(booking.time) + booking.duration}.00 WIB</p>
+                        <div class="flex-between text-sm">
+                            <span class="font-semibold">${formatRupiah(booking.total)}</span>
+                            <span class="text-sub">${booking.code}</span>
+                        </div>
+                        ${booking.status === 'cancelled' ? `<p class="text-xs text-danger mt-2">Alasan: ${booking.cancelReason || '-'}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterHistory(filter) {
+            historyFilter = filter;
+            
+            document.getElementById('filter-all').className = 'btn btn-sm ' + (filter === 'all' ? '' : 'btn-outline');
+            document.getElementById('filter-active').className = 'btn btn-sm ' + (filter === 'active' ? '' : 'btn-outline');
+            document.getElementById('filter-completed').className = 'btn btn-sm ' + (filter === 'completed' ? '' : 'btn-outline');
+            
+            renderHistory();
+        }
+
+        // ==================== HELP ====================
+        function toggleFaq(element) {
+            element.classList.toggle('active');
+        }
+
+        function submitHelp() {
+            const subject = document.getElementById('help-subject').value;
+            const message = document.getElementById('help-message').value.trim();
+            
+            hideError('help-message');
+            
+            if (!message) {
+                showError('help-message', 'Pesan harus diisi');
+                return;
+            }
+
+            // In real app, this would send to server
+            showToast('✅ Pesan terkirim! Kami akan segera menghubungi Anda', 'success');
+            
+            setTimeout(() => {
+                document.getElementById('help-message').value = '';
+                navigateTo('screen-profile');
+            }, 1000);
+        }
+
+        function shareBooking() {
+            const code = document.getElementById('booking-code').textContent;
+            const court = document.getElementById('success-court').textContent;
+            const date = document.getElementById('success-date').textContent;
+            const time = document.getElementById('success-time').textContent;
+
+            const text = `🎾 Booking SmashCourt\n\nLapangan: ${court}\nTanggal: ${date}\nWaktu: ${time}\nKode: ${code}\n\nSampai jumpa di lapangan!`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Booking SmashCourt',
+                    text: text
+                }).catch(() => {
+                    copyToClipboard(text);
+                });
+            } else {
+                copyToClipboard(text);
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('📋 Disalin ke clipboard!', 'success');
+            }).catch(() => {
+                showToast('⚠️ Gagal menyalin', 'warning');
+            });
+        }
+
+        // ==================== UTILITIES ====================
+        function showError(inputId, message) {
+            const input = document.getElementById(inputId);
+            const errorEl = document.getElementById(inputId + '-error');
+            if (input) input.classList.add('error');
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function hideError(inputId) {
+            const input = document.getElementById(inputId);
+            const errorEl = document.getElementById(inputId + '-error');
+            if (input) input.classList.remove('error');
+            if (errorEl) errorEl.classList.remove('show');
+        }
+
+        function clearForm(inputIds) {
+            inputIds.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) input.value = '';
+            });
+        }
+
+        function formatRupiah(amount) {
+            return 'Rp ' + amount.toLocaleString('id-ID');
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function isValidPhone(phone) {
+            return /^08[0-9]{8,11}$/.test(phone.replace(/[-\s]/g, ''));
+        }
+
+        // Handle enter key on forms
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const activeScreen = document.querySelector('.content.active');
+                if (activeScreen.id === 'screen-login') handleLogin();
+                if (activeScreen.id === 'screen-register') handleRegister();
+            }
+        });
+    </script>
+</body>
+</html>
